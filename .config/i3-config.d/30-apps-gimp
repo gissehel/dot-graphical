@@ -1,0 +1,4 @@
+assign [class="Gimp"] $workspace5
+# assign [class="^gimp$"] → 5
+
+

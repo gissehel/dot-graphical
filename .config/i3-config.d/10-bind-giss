@@ -1,0 +1,15 @@
+# own config
+
+bindsym $mod+g split toggle
+
+# bindsym $mod+Shift+q close
+
+bindsym $mod+n exec i3lock -c 221133 -i /home/gissehel/Universal/Image/System/2019-04-30-Odysseus-3-screens-3x1920x1080.png
+
+# reload the configuration file
+bindsym $mod+Shift+c exec mki3config , reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r exec mki3config , restart
+
+

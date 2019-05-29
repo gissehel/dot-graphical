@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+CONFIG_FILE=~/.config/webapp-urls
+[ -z "${WEBAPP_LAUNCHER}" ] && WEBAPP_LAUNCHER=google-chrome
+
+[ -f "${CONFIG_FILE}" ] || touch "${CONFIG_FILE}"
+
+[ $(wc -l "${CONFIG_FILE}" | cut -d " " -f1) == "0" ] && echo "https://google.com/ (google search engine)" > "${CONFIG_FILE}"
+
+url="$(cat "${CONFIG_FILE}" | rofi -p "webapp" -lines 25 -dmenu | cut -d " " -f1)"
+
+[ -n "${url}" ] && "${WEBAPP_LAUNCHER}" -app="${url}"
+

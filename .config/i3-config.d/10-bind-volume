@@ -1,0 +1,12 @@
+set $volume_up exec --no-startup-id pactl set-sink-volume `pactl list sinks short | grep "$(pacmd stat | grep "Default sink name" | cut -d ":" -f 2 | cut -b 2-)" | cut -f 1 | head -n 1` +5%
+set $volume_down exec --no-startup-id pactl set-sink-volume `pactl list sinks short | grep "$(pacmd stat | grep "Default sink name" | cut -d ":" -f 2 | cut -b 2-)" | cut -f 1 | head -n 1` -5%
+set $volume_mute exec --no-startup-id pactl set-sink-mute `pactl list sinks short | grep "$(pacmd stat | grep "Default sink name" | cut -d ":" -f 2 | cut -b 2-)" | cut -f 1 | head -n 1` toggle
+
+bindsym XF86AudioRaiseVolume $volume_up
+bindsym XF86AudioLowerVolume $volume_down
+bindsym XF86AudioMute $volume_mute
+
+bindsym $mod+Control+Up $volume_up
+bindsym $mod+Control+Down $volume_down
+bindsym $mod+Control+End $volume_mute
+

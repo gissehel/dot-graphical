@@ -1,0 +1,4 @@
+assign [instance="^TeamViewer.exe$"] $workspace9
+assign [class="^TeamViewer$"] $workspace9
+
+
