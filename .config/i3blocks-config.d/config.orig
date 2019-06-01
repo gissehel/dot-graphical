@@ -77,13 +77,13 @@ interval=30
 # Ethernet
 [iface]
 label=eth
-instance=enp0s31f6
+instance=enp0s3
 color=#00FF00
 interval=5
 separator=false
 
 [bandwidth]
-instance=enp0s31f6
+instance=enp0s3
 INLABEL= 
 OUTLABEL= 
 interval=5

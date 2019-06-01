@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 
-cat ~/.config/i3-config.d/* > ~/.config/i3/config
+mkdir -p ~/.config/i3
+mkdir -p ~/.config/i3blocks
+
+cat ~/.config/i3-config.d/*.config > ~/.config/i3/config
+cat ~/.config/i3blocks-config.d/*.config > ~/.config/i3blocks/config
+
+
