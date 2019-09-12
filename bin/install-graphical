@@ -25,7 +25,7 @@ echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sud
 # i3 gaps repo
 sudo add-apt-repository ppa:kgilmer/speed-ricer
 
-sudo apt update && sudo apt install -y autoconf gawk make gcc fonts-font-awesome i3-gaps rofi gsimplecal google-chrome-stable code feh
+sudo apt update && sudo apt install -y autoconf gawk make gcc fonts-font-awesome i3-gaps rofi gsimplecal google-chrome-stable code feh udiskie
 
 [ -d "${repo_location}/i3blocks" ] || {
     git clone "https://github.com/vivien/i3blocks" "${repo_location}/i3blocks"
