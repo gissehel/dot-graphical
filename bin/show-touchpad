@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+device="$(xinput list | grep Touchpad | perl -ape 's{.*id=(\d+).*}{$1}')"
+status="$(xinput list-props "${device}" | grep "Device Enabled" | perl -ape 's{.*:.*(\d+).*}{$1}')"
+[ "${status}" == "1" ] && echo "✔️" || echo "❌"
+
+
