@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+repo_location=~/dev/project
+mkdir -p "${repo_location}"
+
+[ -d "${repo_location}/i3blocks" ] || {
+    ensure-packages-installed gcc make gawk
+    git clone "https://github.com/vivien/i3blocks" "${repo_location}/i3blocks"
+    cd "${repo_location}/i3blocks"
+    ./autogen.sh
+    ./configure
+    make
+    ln -s ../dev/project/i3blocks/i3blocks ~/bin/i3blocks
+}
+[ -d "${repo_location}/i3blocks-contrib" ] || git clone "https://github.com/vivien/i3blocks-contrib" "${repo_location}/i3blocks-contrib"
+
+
