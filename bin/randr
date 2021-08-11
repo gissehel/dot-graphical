@@ -1,9 +1,36 @@
 #!/usr/bin/env bash
 
+choices=""
+declare -A target_map
+
+xrandr_command() {
+    ARGS="$@"
+    echo "DEBUG: > xrandr ${ARGS}"
+    xrandr ${ARGS}
+}
+
+set_target() {
+    target="$1"
+    shift
+    if [ -z "${choices}" ]
+    then
+        choices="${target}"
+    else
+        choices="${choices} ${target}"
+    fi
+    target_map[${target}]="${target}"
+    for alias in "$@"
+    do
+        target_map[${alias}]="${target}"
+    done
+}
+
 moveto() {
     workspace="$1"
     display="$2"
+    echo "DEBUG: Move [${workspace}] to [${display}]"
     i3-msg "[workspace=${workspace}] move workspace to output ${display}"
+    
 }
 
 assignon() {
@@ -15,126 +42,273 @@ assignon() {
     done
 }
 
+declare -A C_DISP
+declare -A C_DISP_MODE
+declare -A C_DISP_OP
+declare -A C_DISP_SOURCE
+declare -A C_ASSIGN
+
+set_display() {
+    echo $@
+    local N="$1"
+    shift
+    C_DISP[${N}]="$1"
+    shift
+    echo $@
+    echo "${C_DISP[1]}"
+
+    if [ "${N}" == 1 ]
+    then
+        C_DISP_OP[${N}]="P"
+    fi
+
+    while [ "$1" == "R" ] || [ "$1" == "L" ] || [ "$1" == "C" ] || [ "$1" == "M" ]
+    do
+        if [ "$1" == "M" ]
+        then
+            C_DISP_MODE[${N}]="$2"
+            shift
+            shift
+        else
+            C_DISP_OP[${N}]="$1"
+            shift
+            C_DISP_SOURCE[${N}]="$1"
+            shift
+        fi
+    done
+
+    C_ASSIGN[${N}]="$*"
+}
+
+apply_op_on_source() {
+    N="$1"
+    OP_ARG=""
+    MODE_ARG=""
+    debug "N"
+    DISP="${C_DISP[${N}]}"
+    OP="${C_DISP_OP[${N}]}"
+    SOURCE="${C_DISP_SOURCE[${N}]}"
+    MODE="${C_DISP_MODE[${N}]}"
+    debug "DISP"
+    debug "OP"
+    debug "SOURCE"
+    debug "MODE"
+    case "${OP}" in
+        P)
+            OP_ARG="--primary"
+            ;;
+        C)
+            OP_ARG="--same-as ${SOURCE}"
+            ;;
+        L)
+            OP_ARG="--left-of ${SOURCE}"
+            ;;
+        R)
+            OP_ARG="--right-of ${SOURCE}"
+            ;;
+        "")
+            ;;
+        *)
+            ;;
+    esac
+    if [ -n "${MODE}" ]
+    then
+        MODE_ARG="--mode ${MODE}"
+    else
+        MODE_ARG="--auto"
+    fi
+    [ -n "${DISP}" ] && xrandr_command --output "${DISP}" ${MODE_ARG} ${OP_ARG}
+}
+
+debug() {
+    name="$1"
+    echo "DEUBG: ${name} : [${!name}]"
+}
+
+debugs() {
+    debug "C_DISP[1]"
+    debug "C_DISP_OP[1]"
+    debug "C_DISP_SOURCE[1]"
+    debug "C_DISP_MODE[1]"
+    debug "C_ASSIGN[1]"
+    debug "C_DISP[2]"
+    debug "C_DISP_OP[2]"
+    debug "C_DISP_SOURCE[2]"
+    debug "C_DISP_MODE[2]"
+    debug "C_ASSIGN[2]"
+    debug "C_DISP[3]"
+    debug "C_DISP_OP[3]"
+    debug "C_DISP_SOURCE[3]"
+    debug "C_DISP_MODE[3]"
+    debug "C_ASSIGN[3]"
+}
+
+
+apply_conf() {
+    debugs
+    for DISP in ${DISPLAYS}
+    do
+        USE_DISP="0"
+        for N in 1 2 3 
+        do
+            if [ "${DISP}" == "${C_DISP[${N}]}" ]
+            then
+                USE_DISP="1"
+            fi
+        done
+        [ "${USE_DISP}" == 0 ] && xrandr_command --output "${DISP}" --off
+    done
+    for N in 1 2 3
+    do
+        apply_op_on_source "${N}"
+    done
+    for N in 1 2 3
+    do
+        [ -n "${C_DISP[${N}]}" ] && assignon "${C_DISP[${N}]}" ${C_ASSIGN[${N}]}
+    done
+}
+
+DISPLAYS=""
+
+register_display() {
+    DISP="$1"
+    if [ -z "${DISPLAYS}" ]
+    then
+        DISPLAYS="${DISP}"
+    else
+        DISPLAYS="${DISPLAYS} ${DISP}"
+    fi
+}
+
+DISP_LAPTOP="eDP-1"
+DISP_WORK1="DP-2-1"
+DISP_WORK2="DP-1"
+DISP_WORK3="DP-2-2"
+DISP_ITEC1="DP-1-1"
+DISP_ITEC2="DP-1-2"
+DISP_ITEC3="DP-1-3"
+DISP_HDMI="HDMI-1"
+
+register_display "${DISP_LAPTOP}"
+register_display "${DISP_WORK1}"
+register_display "${DISP_WORK2}"
+register_display "${DISP_WORK3}"
+register_display "${DISP_ITEC1}"
+register_display "${DISP_ITEC2}"
+register_display "${DISP_ITEC3}"
+register_display "${DISP_HDMI}"
+
+set_target "work"
 work() {
-        xrandr --output DP-2-3 --off
-        xrandr --output HDMI-1 --off
-        xrandr --output DP-2-2 --auto --primary
-        xrandr --output DP-1 --auto --right-of DP-2-2
-        xrandr --output eDP-1 --auto --right-of DP-1
-        assignon "DP-2-2" 2 1
-        assignon "DP-1" 8 6 5 4 3
-        assignon "eDP-1" 9 7
+    set_display 1 "${DISP_WORK1}" 2 1
+    set_display 2 "${DISP_WORK2}" R "${DISP_WORK1}" 8 6 5 4 3
+    set_display 3 "${DISP_LAPTOP}" R "${DISP_WORK2}" 9 7
+    apply_conf
 }
 
+set_target "work2"
 work2() {
-        xrandr --output DP-2-3 --off
-        xrandr --output HDMI-1 --off
-        xrandr --output eDP-1 --off
-        xrandr --output DP-2-2 --auto --primary
-        xrandr --output DP-1 --auto --right-of DP-2-2
-        assignon "DP-2-2" 2 1
-        assignon "DP-1" 9 8 7 6 5 4 3
+    set_display 1 "${DISP_WORK1}" 2 1
+    set_display 2 "${DISP_WORK2}" R "${DISP_WORK1}" 9 8 7 6 5 4 3
+    apply_conf
 }
 
+set_target "off"
 off() {
-        xrandr --output eDP-1 --primary
-        xrandr --output DP-2-2 --off
-        xrandr --output DP-2-3 --off
-        xrandr --output DP-1 --off
-        xrandr --output HDMI-1 --off
+    set_display 1 "${DISP_LAPTOP}" M "1920x1080"
+    apply_conf
 }
 
-copy() {
-        xrandr --output DP-2-2 --auto --primary
-        xrandr --output DP-1 --auto --same-as DP-2-2 
-        xrandr --output eDP-1 --auto --same-as DP-2-2
+set_target "test"
+test() {
+    set_display 1 "${DISP_ITEC1}" M "1920x1080"
+    set_display 2 "${DISP_LAPTOP}" C "${DISP_ITEC1}" M "1920x1080"
+    set_display 3 "${DISP_ITEC2}" C "${DISP_ITEC1}" M "1920x1080"
+    apply_conf
 }
 
-home() {
-        xrandr --output DP-2-3 --off
-        xrandr --output DP-2-2 --off
-        xrandr --output DP-1 --off
-        xrandr --output HDMI-1 --auto --primary
-        xrandr --output eDP-1 --auto --left-of HDMI-1
-        assignon "eDP-1" 10 9 8 7 6 5 4 2 1
-        assignon "HDMI-1" 3 
+set_target "work_copy"
+work_copy() {
+    set_display 1 "${DISP_WORK1}"
+    set_display 2 "${DISP_WORK2}" C "${DISP_WORK1}"
+    set_display 3 "${DISP_LAPTOP}" C "${DISP_LAPTOP}"
+    apply_conf
 }
 
+# set_target "ex_home"
+ex_home() {
+    set_display 1 "${DISP_HDMI}" 3
+    set_display 2 "${DISP_LAPTOP}" L "${DISP_HDMI}" 10 9 8 7 6 5 4 2 1
+    apply_conf
+}
+
+set_target "reuG" "reu"
 reuG() {
-        xrandr --output DP-2-2 --off
-        xrandr --output DP-1 --off
-        xrandr --output eDP-1 --auto --primary
-        xrandr --output HDMI-1 --auto --left-of eDP-1
-        assignon "eDP-1" 10 9 8 7 6 5 4 3 2 1
+    set_display 1 "${DISP_LAPTOP}" 10 9 8 7 6 5 4 3 2 1
+    set_display 2 "${DISP_HDMI}" M "1920x1080" L "${DISP_LAPTOP}"
+    apply_conf
 }
 
+set_target "reuD"
 reuD() {
-        xrandr --output DP-2-2 --off
-        xrandr --output DP-1 --off
-        xrandr --output eDP-1 --auto --primary
-        xrandr --output HDMI-1 --auto --right-of eDP-1
-        assignon "eDP-1" 10 9 8 7 6 5 4 3 2 1
+    set_display 1 "${DISP_LAPTOP}" 10 9 8 7 6 5 4 3 2 1
+    set_display 2 "${DISP_HDMI}" M "1920x1080" R "${DISP_LAPTOP}"
+    apply_conf
 }
 
+set_target "reuC"
 reuC() {
-        xrandr --output DP-2-2 --off
-        xrandr --output DP-1 --off
-        xrandr --output eDP-1 --auto --primary
-        xrandr --output HDMI-1 --auto --same-as eDP-1
-        assignon "eDP-1" 10 9 8 7 6 5 4 3 2 1
+    set_display 1 "${DISP_LAPTOP}" 10 9 8 7 6 5 4 3 2 1
+    set_display 2 "${DISP_HDMI}" M "1920x1080" C "${DISP_LAPTOP}"
+    apply_conf
 }
 
-choices="work work2 off copy home reuG reuD reuC"
+set_target "itec" "home"
+itec() {
+    set_display 1 "${DISP_ITEC1}" M "1920x1080" 2 1
+    set_display 2 "${DISP_ITEC2}" M "1920x1080" R "${DISP_ITEC1}" 8 7 6 5 4 3 
+    set_display 3 "${DISP_LAPTOP}" M "1920x1080" L "${DISP_ITEC1}" 9
+    apply_conf
+}
+
+set_target "itec22"
+itec22() {
+    set_display 1 "${DISP_LAPTOP}" M "1920x1080" 9 2 1
+    set_display 2 "${DISP_ITEC2}" M "1920x1080" R "${DISP_LAPTOP}" 8 7 6 5 4 3 
+    apply_conf
+}
+
+set_target "itec27"
+itec27() {
+    set_display 1 "${DISP_ITEC1}" M "1920x1080" 8 7 6 5 4 3 2 1
+    set_display 3 "${DISP_LAPTOP}" M "1920x1080" L "${DISP_ITEC1}" 9
+    apply_conf
+}
 
 default() {
-        xrandr
-        echo ""
-        echo "Options are : ${choices}"
+    xrandr
+    echo ""
+    echo "Options are : ${choices}"
 }
-
 
 TARGET="$1"
 
 case "$TARGET" in
-    work)
-        work
-        i3-msg restart
-        ;;
-    work2)
-        work2
-        i3-msg restart
-        ;;
-    off)
-        off
-        i3-msg restart
-        ;;
-    copy) 
-        copy
-        i3-msg restart
-        ;;
-    home)
-        home
-        i3-msg restart
-        ;;
-    reu|reuG)
-        reuG
-        i3-msg restart
-        ;;
-    reuD)
-        reuD
-        i3-msg restart
-        ;;
-    reuC)
-        reuC
-        i3-msg restart
-        ;;
     --list)
         for choice in ${choices}
         do
             echo "${choice}"
         done
         ;;
-    *) 
-        default
+    *)
+        code_to_call=""
+        [ -n "${TARGET}" ] && code_to_call="${target_map[${TARGET}]}"
+        if [ -n "${code_to_call}" ] 
+        then
+            echo "${code_to_call}"
+            "${code_to_call}"
+        else
+            default
+        fi
         ;;
 esac
