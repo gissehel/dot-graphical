@@ -198,24 +198,55 @@ register_display "${DISP_ITEC2}"
 register_display "${DISP_ITEC3}"
 register_display "${DISP_HDMI}"
 
+set_target "off"
+off() {
+    set_display 1 "${DISP_LAPTOP}" M "1920x1080"
+    apply_conf
+}
+
+set_target "xpl"
+xpl() {
+    set_display 1 "${DISP_HDMI}" 2 1
+    set_display 2 "${DISP_WORK3}" M "1920x1080" R "${DISP_HDMI}" 8 6 5 4 3
+    set_display 3 "${DISP_LAPTOP}" M "1920x1080" L "${DISP_HDMI}" 9 7
+    apply_conf
+}
+
 set_target "work"
 work() {
     set_display 1 "${DISP_WORK1}" 2 1
-    set_display 2 "${DISP_WORK2}" R "${DISP_WORK1}" 8 6 5 4 3
-    set_display 3 "${DISP_LAPTOP}" R "${DISP_WORK2}" 9 7
+    set_display 2 "${DISP_WORK2}" M "1920x1080" R "${DISP_WORK1}" 8 6 5 4 3
+    set_display 3 "${DISP_LAPTOP}" M "1920x1080" R "${DISP_WORK2}" 9 7
     apply_conf
 }
 
 set_target "work2"
 work2() {
     set_display 1 "${DISP_WORK1}" 2 1
-    set_display 2 "${DISP_WORK2}" R "${DISP_WORK1}" 9 8 7 6 5 4 3
+    set_display 2 "${DISP_WORK2}" M "1920x1080" R "${DISP_WORK1}" 9 8 7 6 5 4 3
     apply_conf
 }
 
-set_target "off"
-off() {
-    set_display 1 "${DISP_LAPTOP}" M "1920x1080"
+set_target "workface1"
+workface1() {
+    set_display 1 "${DISP_LAPTOP}" M "1920x1080" 9 7
+    set_display 3 "${DISP_ITEC1}" M "2560x1440" L "${DISP_LAPTOP}" 8 6 5 4 3 2 1
+    apply_conf
+}
+
+set_target "workface2"
+workface2() {
+    set_display 1 "${DISP_ITEC1}" M "2560x1440" 8 6 5 4 3 2 1
+    set_display 2 "${DISP_LAPTOP}" M "1920x1080" L "${DISP_ITEC1}" 9 7
+    # set_display 1 "${DISP_ITEC3}" C "${DISP_ITEC1}"
+    apply_conf
+}
+
+set_target "workfond"
+workfond() {
+    set_display 1 "${DISP_WORK1}" M "2560x1440" 8 6 5 4 3
+    set_display 2 "${DISP_WORK3}" M "1440x900" L "${DISP_WORK1}" 2 1
+    set_display 3 "${DISP_LAPTOP}" M "1920x1080" R "${DISP_WORK1}" 9 7
     apply_conf
 }
 
@@ -266,8 +297,8 @@ reuC() {
 set_target "itec" "home"
 itec() {
     set_display 1 "${DISP_ITEC1}" M "1920x1080" 2 1
-    set_display 2 "${DISP_ITEC2}" M "1920x1080" R "${DISP_ITEC1}" 8 7 6 5 4 3 
-    set_display 3 "${DISP_LAPTOP}" M "1920x1080" L "${DISP_ITEC1}" 9
+    set_display 2 "${DISP_ITEC2}" M "1920x1080" R "${DISP_ITEC1}" 8 6 5 4 3 
+    set_display 3 "${DISP_LAPTOP}" M "1920x1080" L "${DISP_ITEC1}" 7 9
     apply_conf
 }
 
