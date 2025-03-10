@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-# i3 gaps repo
-source_list="/etc/apt/sources.list.d/kgilmer-ubuntu-speed-ricer-$(lsb_release -cs).list"
-if [ ! -f "${source_list}" ]
-then
-    sudo add-apt-repository ppa:kgilmer/speed-ricer
-fi
-

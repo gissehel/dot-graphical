@@ -188,6 +188,8 @@ DISP_ITEC1="DP-1-1"
 DISP_ITEC2="DP-1-2"
 DISP_ITEC3="DP-1-3"
 DISP_HDMI="HDMI-1"
+DISP_MASTER1="HDMI-1"
+DISP_MASTER2="DVI-I-1"
 
 register_display "${DISP_LAPTOP}"
 register_display "${DISP_WORK1}"
@@ -197,6 +199,8 @@ register_display "${DISP_ITEC1}"
 register_display "${DISP_ITEC2}"
 register_display "${DISP_ITEC3}"
 register_display "${DISP_HDMI}"
+register_display "${DISP_MASTER1}"
+register_display "${DISP_MASTER2}"
 
 set_target "off"
 off() {
@@ -313,6 +317,13 @@ set_target "itec27"
 itec27() {
     set_display 1 "${DISP_ITEC1}" M "1920x1080" 8 7 6 5 4 3 2 1
     set_display 3 "${DISP_LAPTOP}" M "1920x1080" L "${DISP_ITEC1}" 9
+    apply_conf
+}
+
+set_target "gmaster"
+gmaster() {
+    set_display 1 "${DISP_MASTER1}" M "2560x1440" 8 6 4 2
+    set_display 2 "${DISP_MASTER2}" M "2560x1440" R "${DISP_MASTER1}" 9 5 7 3 1
     apply_conf
 }
 

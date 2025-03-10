@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CONFIG_FILE=~/.config/webapp-urls
-[ -z "${WEBAPP_LAUNCHER}" ] && WEBAPP_LAUNCHER=google-chrome
+[ -z "${WEBAPP_LAUNCHER}" ] && WEBAPP_LAUNCHER=chromium
 [ -z "${WEBAPP_PARAMS}" ] && WEBAPP_PARAMS=
 
 [ -f "${CONFIG_FILE}" ] || touch "${CONFIG_FILE}"
