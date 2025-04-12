@@ -322,8 +322,8 @@ itec27() {
 
 set_target "gmaster"
 gmaster() {
-    set_display 1 "${DISP_MASTER1}" M "2560x1440" 5 4 3 2 1
-    set_display 2 "${DISP_MASTER2}" M "2560x1440" R "${DISP_MASTER1}" 9 8 6 7 6
+    set_display 1 "${DISP_MASTER1}" M "2560x1440" 3 2 1
+    set_display 2 "${DISP_MASTER2}" M "2560x1440" R "${DISP_MASTER1}" 9 8 6 7 6 5 4
     apply_conf
 }
 
